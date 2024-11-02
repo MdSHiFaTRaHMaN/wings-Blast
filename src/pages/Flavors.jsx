@@ -38,10 +38,9 @@ const Flavors = () => {
                                 type="range"
                                 min="0"
                                 max="100"
-                                color='bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
                                 value={heatLevel}
                                 onChange={handleSliderChange}
-                                className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                                className="w-full range-secondary"
                             />
                             <div className="flex justify-between mt-2">
                                 <span className={heatLevel < 30 ? "text-green-400" : ""}>No Heat</span>

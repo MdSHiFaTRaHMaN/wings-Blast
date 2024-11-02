@@ -17,7 +17,7 @@ const FoodDetails = () => {
     const [unitPrice, setUnitPrice] = useState(0); // Initialize as 0 until foodDetails is loaded
     const [totalPrice, setTotalPrice] = useState(0);
 
-    console.log(foodDetails);
+    // console.log(foodDetails);
     useEffect(() => {
         // Set unitPrice when foodDetails is loaded and update totalPrice
         if (foodDetails?.price) {
@@ -36,7 +36,7 @@ const FoodDetails = () => {
     useEffect(() => {
         // Check if 'deliveryAddress' exists in localStorage
         const savedAddress = localStorage.getItem("deliveryAddress");
-        console.log(savedAddress)
+        // console.log(savedAddress)
         if (!savedAddress) {
             // Redirect to /location page if no address found
             navigate('/myLocation');

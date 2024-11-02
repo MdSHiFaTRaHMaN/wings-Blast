@@ -10,8 +10,8 @@ const FindLocation = () => {
     const [buildingInfo, setBuildingInfo] = useState(""); // State for Building/Suite/Apt input
     const [savedCarryoutAddress, setSavedCarryoutAddress] = useState(""); // State for saved carryout address
     const [savedDeliveryAddress, setSavedDeliveryAddress] = useState(""); // State for saved delivery address
- 
-    const {customData, setUserData } = useContext(AuthContext)
+
+    const { customData, setUserData } = useContext(AuthContext)
     // Load saved addresses from local storage on component mount
     console.log(customData)
     console.log(setUserData)
@@ -75,14 +75,14 @@ const FindLocation = () => {
             </div>
             <div className="flex space-x-2 md:space-x-4 mb-4">
                 <button
-                    className={`px-4 py-2 text-sm md:text-base rounded-l-full ${activeTab === 'carryout' ? 'bg-black text-white' : 'bg-white text-black border'
+                    className={`px-4 py-2 text-sm md:text-base rounded-l-full ${activeTab === 'carryout' ? 'bg-green-800 text-white' : 'bg-white text-black border'
                         }`}
                     onClick={() => setActiveTab('carryout')}
                 >
                     CARRYOUT
                 </button>
                 <button
-                    className={`px-4 py-2 text-sm md:text-base rounded-r-full ${activeTab === 'delivery' ? 'bg-black text-white' : 'bg-white text-black border'
+                    className={`px-4 py-2 text-sm md:text-base rounded-r-full ${activeTab === 'delivery' ? 'bg-green-800 text-white' : 'bg-white text-black border'
                         }`}
                     onClick={() => setActiveTab('delivery')}
                 >
@@ -97,22 +97,25 @@ const FindLocation = () => {
                         </label>
 
                         <div className="relative mt-2 flex gap-2 items-center">
-                            <div className="absolute inset-y-0 left-0 flex items-center py-1.5 pl-3">
-                                <FaLocationArrow className="text-black" />
+                            <div className="absolute inset-y-0 left-0 flex items-center py-2 pl-3">
+                                <FaLocationArrow className="text-gray-600 text-lg" />
                             </div>
 
                             <input
                                 type="text"
                                 value={address}
                                 onChange={handleAddressChange}
-                                className="block w-full pl-10 placeholder-gray-400/70 rounded-l-lg border border-gray-200 bg-white px-4 py-2 md:px-5 md:py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+                                className="block w-full pl-10 placeholder-gray-400 placeholder:ml-4 rounded-lg border border-gray-300 bg-white shadow-md transition duration-200 ease-in-out focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50  py-3 text-gray-700 text-lg"
+                                placeholder="Enter your address"
                             />
+
                             <button
                                 onClick={saveAddress}
-                                className="rounded-r-lg bg-blue-500 px-4 py-3 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                className="rounded-lg bg-blue-600 px-4 py-3 text-white text-lg hover:bg-blue-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 flex items-center">
                                 Save
                             </button>
                         </div>
+
                         <button
                             className="btn btn-success text-white w-full mt-4">
                             Your Current Location

@@ -2,16 +2,15 @@ import { useState } from "react";
 import { Disclosure } from "@headlessui/react";
 import { RxCross2 } from "react-icons/rx";
 import Side from '../../assets/images/side.png';
-import Coke from '../../assets/images/coke.png';
 
 const SideSection = ({ sides, loading, error }) => {
     const [selectedSides, setSelectedSides] = useState(null);
 
-    const handleSelectSide = (drink) => {
-        if (selectedSides === drink) {
+    const handleSelectSide = (side) => {
+        if (selectedSides === side) {
             setSelectedSides(null); // Unselect if clicked again
         } else {
-            setSelectedSides(drink); // Select new drink
+            setSelectedSides(side); // Select new side
         }
     };
 
@@ -26,12 +25,12 @@ const SideSection = ({ sides, loading, error }) => {
                                 <h2 className="font-bold mt-2 text-gray-600">
                                     <span>Up To Select: </span>
                                     <span className="text-black">
-                                        {selectedSides ? selectedSides.drink_name : "(Selected)"}
+                                        {selectedSides ? selectedSides.side_name : "(Selected)"}
                                     </span>
                                 </h2>
                             </div>
                             <div className="text-red-500 font-semibold">
-                                <span>{selectedSides ? selectedSides.drink_name : "None Selected"}</span>
+                                <span>{selectedSides ? selectedSides.side_name : "None Selected"}</span>
                                 <span className="ml-2">Required</span>
                             </div>
                         </Disclosure.Button>
@@ -56,7 +55,7 @@ const SideSection = ({ sides, loading, error }) => {
                                                 </div>
                                                 <input
                                                     type="radio"
-                                                    name="drink"
+                                                    name="side"
                                                     className="radio radio-success"
                                                     checked={selectedSides === category}
                                                     onChange={() => handleSelectSide(category)}
@@ -66,7 +65,7 @@ const SideSection = ({ sides, loading, error }) => {
                                                 <div className="custom-side-option px-4 py-2 rounded-lg">
                                                     <button
                                                         onClick={() => document.getElementById('side_option').showModal()}
-                                                        className=" text-green-500 text-base">Customize Your Drink</button>
+                                                        className=" text-green-500 text-base">Customize Your side</button>
                                                     <h3>Self-Serve Fountain</h3>
                                                 </div>
                                             )}
@@ -82,7 +81,7 @@ const SideSection = ({ sides, loading, error }) => {
                                             </div>
                                             <input
                                                 type="radio"
-                                                name="drink"
+                                                name="side"
                                                 className="radio radio-success"
                                                 checked={!selectedSides}
                                                 onChange={() => handleSelectSide(null)}

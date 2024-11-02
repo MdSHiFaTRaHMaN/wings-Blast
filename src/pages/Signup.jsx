@@ -6,10 +6,16 @@ import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { API } from "../api/api";
 import Swal from "sweetalert2";
+import { IoEye, IoEyeOff } from "react-icons/io5";
 
 const Signup = () => {
     const [signUpLoading, setSignUpLoading] = useState(false);
     // const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
 
     const handleSignUp = async (e) => {
         e.preventDefault();
@@ -34,15 +40,22 @@ const Signup = () => {
             localStorage.setItem("token", response.data.token);
             setSignUpLoading(false)
             Swal.fire({
-                position: "top-end",
+                position: "center",
                 icon: "success",
-                title: "Your work has been saved",
+                title: "Sign Up Successful!",
                 showConfirmButton: false,
                 timer: 1500
-              });
+            }).then(() => {
+                window.location.href = '/';
+                // Redirect to home page after confirmation
+            });
         } catch (error) {
-            console.error("login Fail", error)
-            setSignUpLoading(false)
+            Swal.fire({
+                title: 'Sign Up Failed',
+                text: 'Please check your credentials.',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
         } finally {
             setSignUpLoading(false)
         }
@@ -62,32 +75,84 @@ const Signup = () => {
                         <div className="grid lg:grid-cols-2 gap-5 w-full">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Fast name</label>
-                                <input type="text" id="username" name="fastname" className="mt-1 p-2 w-full  border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type="text"
+                                    required
+                                    id="username"
+                                    name="fastname"
+                                    className="mt-1 p-2 w-full  border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Last name</label>
-                                <input type="text" id="username" name="lastname" className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type="text"
+                                    required
+                                    id="username"
+                                    name="lastname"
+                                    className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
                             </div>
                         </div>
 
                         <div className="grid lg:grid-cols-2 gap-5 w-full">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="username" name="email" className="mt-1 p-2 w-full  border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type="email"
+                                    id="username"
+                                    required
+                                    name="email"
+                                    className="mt-1 p-2 w-full  border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Phone Number(Optional)</label>
-                                <input type="number" id="username" name="number" className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type="number"
+                                    id="username"
+                                    name="number"
+                                    className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
                             </div>
                         </div>
                         <div className="grid lg:grid-cols-2 gap-5 w-full">
-                            <div>
+                            <div className="relative">
                                 <label className="block text-sm font-medium text-gray-700">Password</label>
-                                <input type="password" id="username" name="password" className="mt-1 p-2 w-full  border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md"
+                                />
+                                <span
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 mt-6 right-2 flex items-center cursor-pointer text-gray-500"
+                                >
+                                    {showPassword ? (
+                                        <IoEyeOff />
+                                    ) : (
+                                        <IoEye />
+                                    )}
+                                </span>
                             </div>
-                            <div>
+
+                            <div className="relative">
                                 <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                <input type="password" id="username" name="confirmPassword" className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="mt-1 p-2 w-full border rounded-md"
+                                />
+                                <span
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute inset-y-0 mt-6 right-2 flex items-center cursor-pointer text-gray-500"
+                                >
+                                    {showConfirmPassword ? (
+                                        <IoEyeOff />
+                                    ) : (
+                                        <IoEye />
+                                    )}
+                                </span>
                             </div>
                         </div>
                         <div>

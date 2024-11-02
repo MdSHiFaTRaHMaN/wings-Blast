@@ -19,13 +19,13 @@ function Navbar() {
     const [savedAddress, setSavedAddress] = useState("");
     const { user, isLoading } = useUserProfile()
 
-
     // Load saved address and token from local storage on component mount
     useEffect(() => {
-        const address = localStorage.getItem("deliveryAddress");
-        if (address) {
-            setSavedAddress(address);
-        }
+        const carryout = localStorage.getItem("carryoutAddress");
+        const delivery = localStorage.getItem("deliveryAddress");
+
+        // If carryout address exists, prioritize it; otherwise, use the delivery address
+        setSavedAddress(carryout || delivery || "");
     }, []);
 
     // Define character limit for address display
@@ -37,9 +37,6 @@ function Navbar() {
     const handleSignOut = () => {
         signOutUser();
     };
-
-
-
 
     return (
         <nav className="bg-white w-full shadow-lg fixed top-0 !z-50 bg-opacity-32">
@@ -60,7 +57,7 @@ function Navbar() {
                 <div className="flex items-center space-x-1 md:space-x-6 lg:space-x-4">
                     {savedAddress && (
                         <div className="hidden lg:grid items-center text-sm text-gray-700">
-                            <span>DELIVERY ADDRESS</span>
+                            <span>{localStorage.getItem("carryoutAddress") ? "CARRYOUT ADDRESS" : "DELIVERY ADDRESS"}</span>
                             <a className="ml-1 font-semibold text-green-600 hover:underline cursor-pointer">
                                 {displayAddress}
                                 <Link to='/myLocation'><span className='text-rose-500 hover:no-underline'>(Change)</span></Link>
@@ -83,20 +80,20 @@ function Navbar() {
                     </Link>
 
                     {/* Profile Dropdown */}
-                    <div className=" dropdown dropdown-end">
+                    <div className="dropdown dropdown-end">
                         <button tabIndex={0} className="focus:outline-none">
-                            <img src={ProfileIcon} className=" w-7 mt-1 lg:w-10 md:w-12" alt="Profile" />
+                            <img src={ProfileIcon} className="w-7 mt-1 lg:w-10 md:w-12" alt="Profile" />
                         </button>
                         <ul tabIndex={0} className="dropdown-content menu bg-gray-200 rounded w-52 p-2 shadow-lg mt-2">
                             {isLoading ? (
                                 <li className="text-center p-2">
-                                    <CgSpinner className="animate-spin text-green-500 bg-green-800" /> {/* লোডিং স্পিনার */}
+                                    <CgSpinner className="animate-spin text-green-500 bg-green-800" /> {/* Loading Spinner */}
                                 </li>
                             ) : !user.id ? (
                                 <>
                                     <li>
                                         <NavLink to="/signin" className="text-base font-semibold flex items-center">
-                                            <MdOutlineAssignmentInd /> Sign In
+                                            <MdOutlineAssignmentInd /> Login
                                         </NavLink>
                                     </li>
                                     <li>
@@ -143,20 +140,6 @@ function Navbar() {
 
             {isOpen && (
                 <div className="md:hidden bg-white py-4 px-6">
-                    {/* <div className="flex justify-center space-x-4 mb-4">
-                        {isLoading ? "": !user ? (
-                            <>
-                                <Link to='/signin'><button className="bg-green-600 text-white px-4 py-2 rounded-md">SIGN IN</button></Link>
-                                <Link to='/signup'><button className="bg-green-600 text-white px-4 py-2 rounded-md">SIGN UP</button></Link>
-                            </>
-                        ) : (
-                            <>
-                                <Link to='/userprofile'><button className="bg-green-600 text-white px-4 py-2 rounded-md">User Profile</button></Link>
-                                <Link to='/myorder'><button className="bg-green-600 text-white px-4 py-2 rounded-md">My Order</button></Link>
-                                <button onClick={handleSignOut} className="bg-red-600 text-white px-4 py-2 rounded-md">Log Out</button>
-                            </>
-                        )}
-                    </div> */}
                     <div className="">
                         <Link to='/foodmenu'><span className="text-black text-xl mb-2 border-b shadow-md font-bold flex gap-2 items-center">
                             <MdRestaurantMenu /> MENU
@@ -168,7 +151,7 @@ function Navbar() {
                             <MdLocationPin /> LOCATIONS
                         </span></Link>
                         <span className="text-black text-xl mb-2 border-b shadow-md font-bold flex gap-2 items-center" onClick={() => document.getElementById('language_model').showModal()}>
-                            <GrLanguage />LANGUAGE
+                            <GrLanguage /> LANGUAGE
                         </span>
                     </div>
                 </div>

@@ -6,20 +6,24 @@ import { AuthContext } from "../authprovider/AuthProvider";
 import OtpInput from 'react-otp-input';
 import { CgSpinner } from "react-icons/cg";
 import { API } from "../api/api";
-import { useNavigate } from "react-router-dom";
+import Logo from '../assets/images/wingsBlast.png'
+// import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
- 
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { Link } from "react-router-dom";
+
 
 const Signin = () => {
     const { handleGoogle } = useContext(AuthContext);
     const [showMobileLogin, setShowMobileLogin] = useState(false);
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [loginLoading, setLoginLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [mobile, setMobile] = useState("");
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate(); // Initialize useNavigate
- 
+    // const navigate = useNavigate(); // Initialize useNavigate
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoginLoading(true)
@@ -44,7 +48,7 @@ const Signin = () => {
                 confirmButtonText: 'OK'
             }).then(() => {
                 window.location.href = '/';
-                 // Redirect to home page after confirmation
+                // Redirect to home page after confirmation
             });
 
         } catch (error) {
@@ -81,10 +85,10 @@ const Signin = () => {
                 <div className="-mx-4 flex flex-wrap">
                     <div className="w-full px-4">
                         <div className="relative mx-auto max-w-[525px] overflow-hidden rounded-lg bg-white px-10 py-16 text-center dark:bg-dark-2 sm:px-12 md:px-[60px]">
-                            <div className="mb-10 text-center md:mb-16">
-                                <a href="/#" className="mx-auto inline-block max-w-[160px]">
+                            <div className="text-center md:mb-16">
+                                <a className="mx-auto inline-block max-w-[200px]">
                                     <img
-                                        src="https://cdn.tailgrids.com/2.0/image/assets/images/logo/logo-primary.svg"
+                                        src={Logo}
                                         alt="logo"
                                     />
                                 </a>
@@ -97,13 +101,29 @@ const Signin = () => {
                                     type="email"
                                     name="email"
                                     placeholder="Email"
+                                    required
                                 />
-                                <input
-                                    className="w-full my-3 rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary focus-visible:shadow-none"
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                />
+                                <div className="relative w-full my-3">
+                                    <input
+                                        className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary focus-visible:shadow-none"
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        placeholder="Password"
+                                        required
+                                    />
+
+                                    {/* Show/Hide Password Icon */}
+                                    <span
+                                        className="absolute inset-y-0 right-4 flex items-center cursor-pointer text-black"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <IoEyeOff />
+                                        ) : (
+                                            <IoEye />
+                                        )}
+                                    </span>
+                                </div>
                                 <div className="mb-10">
                                     <input
                                         type="submit"
@@ -144,9 +164,9 @@ const Signin = () => {
                             </ul>
                             <p className="text-base text-body-color dark:text-dark-6">
                                 <span className="pr-0.5">Not a member yet?</span>
-                                <a href="/#" className="text-primary hover:underline">
+                                <Link to='/signup' className="text-primary hover:underline">
                                     Sign Up
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </div>

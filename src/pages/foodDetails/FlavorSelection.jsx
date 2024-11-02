@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Disclosure } from "@headlessui/react";
 import Fire from '../../assets/images/fire.png';
 import { useFlavor } from "../../api/api";
@@ -6,42 +6,92 @@ import { useFlavor } from "../../api/api";
 const FlavorSelection = ({ flavorReq, choiceFlavorReq }) => {
     const [selectedCount, setSelectedCount] = useState(0);
     const [selectedOptions, setSelectedOptions] = useState({});
-    const [wings, setWings] = useState(choiceFlavorReq);
+    const [wingsDistribution, setWingsDistribution] = useState({});
     const { flavor, loading, error } = useFlavor();
-    const { choiceItem, setChoiceItem } = useState();
+    const [choiceItem, setChoiceItem] = useState(0);
 
-    // console.log(flavor)
-    const handleWingsChange = (value) => {
-        const validValue = Math.max(0, Math.min(value, choiceFlavorReq));
-        setWings(validValue);
-        setChoiceItem(validValue); // Update choiceItem based on valid wings count
+    // Function to calculate initial wings distribution based on selected count
+    const getWingsDistribution = (count) => {
+        if (count === 0) return [];
+        const base = Math.floor(choiceFlavorReq / count);
+        const remainder = choiceFlavorReq % count;
+        return Array(count).fill(base).map((val, idx) => idx < remainder ? val + 1 : val);
     };
 
-
-    // console.log(choiceItem)
+    // Update wings distribution whenever options are selected or deselected
+    const updateWingsDistribution = (newSelectedOptions) => {
+        const selectedKeys = Object.keys(newSelectedOptions).filter(key => newSelectedOptions[key]);
+        const distribution = getWingsDistribution(selectedKeys.length);
+        const newDistribution = {};
+        selectedKeys.forEach((key, index) => {
+            newDistribution[key] = distribution[index];
+        });
+        setWingsDistribution(newDistribution);
+    };
 
     const handleSelection = (optionName, checked) => {
         setSelectedOptions((prev) => {
             const newSelectedOptions = { ...prev, [optionName]: checked };
             const newCount = Object.values(newSelectedOptions).filter(Boolean).length;
             setSelectedCount(newCount);
-            if (!checked) setWings(20);
+            updateWingsDistribution(newSelectedOptions);
             return newSelectedOptions;
         });
     };
 
+    // Adjust the wings distribution when the user changes any option's value
+    const handleWingsChange = (optionName, newValue) => {
+        setWingsDistribution((prev) => {
+            const newDistribution = { ...prev, [optionName]: Math.max(0, Math.min(newValue, choiceFlavorReq)) };
+
+            // Calculate total after the new change
+            const totalSelected = Object.values(newDistribution).reduce((sum, val) => sum + val, 0);
+            let excess = totalSelected - choiceFlavorReq;
+
+            // Adjust other values if total exceeds choiceFlavorReq
+            if (excess > 0) {
+                const keys = Object.keys(newDistribution).filter((key) => key !== optionName);
+                for (let key of keys) {
+                    if (excess <= 0) break;
+                    const reduceBy = Math.min(newDistribution[key], excess);
+                    newDistribution[key] -= reduceBy;
+                    excess -= reduceBy;
+                }
+            }
+
+            // Fill deficit if total is less than choiceFlavorReq
+            let deficit = choiceFlavorReq - Object.values(newDistribution).reduce((sum, val) => sum + val, 0);
+            if (deficit > 0) {
+                const keys = Object.keys(newDistribution).filter((key) => key !== optionName);
+                for (let key of keys) {
+                    if (deficit <= 0) break;
+                    const increaseBy = Math.min(choiceFlavorReq - newDistribution[key], deficit);
+                    newDistribution[key] += increaseBy;
+                    deficit -= increaseBy;
+                }
+            }
+
+            return newDistribution;
+        });
+    };
+
+    // Update wings distribution whenever choiceFlavorReq changes
+    useEffect(() => {
+        updateWingsDistribution(selectedOptions);
+    }, [choiceFlavorReq]);
+
+    // Update choiceItem based on total selected wings
+    useEffect(() => {
+        const totalSelectedWings = Object.values(wingsDistribution).reduce((sum, num) => sum + num, 0);
+        setChoiceItem(totalSelectedWings);
+    }, [wingsDistribution]);
+
     if (loading) {
         return <p className="text-center text-lg font-medium"><span className="loading loading-bars loading-lg"></span></p>;
     }
-    // const popularFlavors = flavor.filter(f => f.ispopular);
-    // const wetFlavors = flavor.filter(f => f.isWet);
-    // const dryFlavors = flavor.filter(f => f.isDry);
-    // const honeyFlavors = flavor.filter(f => f.isHoney);
-
 
     return (
         <div className="w-full lg:w-10/12 mx-auto my-3 p-2 bg-white rounded-lg shadow-lg">
-            {/* Flavor Selection Disclosure */}
             <Disclosure defaultOpen>
                 {({ open }) => (
                     <>
@@ -52,7 +102,6 @@ const FlavorSelection = ({ flavorReq, choiceFlavorReq }) => {
                                     <span className="text-base text-gray-500">Up To Select: <span className="text-black ">({selectedCount} of {flavorReq} Selected)</span></span>
                                 </h2>
                             </div>
-                            {/* select wings  */}
                             <div className="text-gray-500">
                                 <h2 className="text-lg font-bold mb-4">
                                     <span className="text-sm text-gray-500">( {choiceItem} of {choiceFlavorReq} Selected)</span>
@@ -62,8 +111,6 @@ const FlavorSelection = ({ flavorReq, choiceFlavorReq }) => {
                         </Disclosure.Button>
                         {error && <p className="text-red-500">Error loading flavors.</p>}
                         <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-700">
-                            {/* all  populer cart */}
-                            {/* All Wet Cart  */}
                             <div className="flavor-selection grid md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
                                 {!loading && flavor.map((category, index) => (
                                     <div key={index} className="w-full">
@@ -93,29 +140,27 @@ const FlavorSelection = ({ flavorReq, choiceFlavorReq }) => {
                                                         disabled={!selectedOptions[category.name] && selectedCount >= flavorReq}
                                                     />
                                                 </div>
-
-                                                {/* Input Field (conditionally shown) */}
                                                 {selectedOptions[category.name] && (
                                                     <div className="mt-3 ml-[90px] mx-auto items-center gap-2 text-gray-700">
                                                         <span className="font-medium">Number of Wings:</span>
-                                                        <div className="flex items-center border p-2 w-[148px]  rounded-md overflow-hidden">
+                                                        <div className="flex items-center border p-2 w-[148px] rounded-md overflow-hidden">
                                                             <button
                                                                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200 transition"
-                                                                onClick={() => handleWingsChange(wings - 1)}
-                                                                disabled={wings <= 0}
+                                                                onClick={() => handleWingsChange(category.name, wingsDistribution[category.name] - 1)}
+                                                                disabled={wingsDistribution[category.name] <= 0}
                                                             >
                                                                 -
                                                             </button>
                                                             <input
                                                                 type="number"
-                                                                value={wings}
-                                                                onChange={(e) => handleWingsChange(Number(e.target.value))}
+                                                                value={wingsDistribution[category.name] || 0}
+                                                                onChange={(e) => handleWingsChange(category.name, Number(e.target.value))}
                                                                 className="w-16 text-center text-lg border-l border-r outline-none"
                                                             />
                                                             <button
                                                                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200 transition"
-                                                                onClick={() => handleWingsChange(wings + 1)}
-                                                                disabled={wings >= 100}
+                                                                onClick={() => handleWingsChange(category.name, wingsDistribution[category.name] + 1)}
+                                                                disabled={wingsDistribution[category.name] >= choiceFlavorReq}
                                                             >
                                                                 +
                                                             </button>
@@ -131,7 +176,6 @@ const FlavorSelection = ({ flavorReq, choiceFlavorReq }) => {
                     </>
                 )}
             </Disclosure>
-           
         </div>
     );
 };
